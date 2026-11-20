@@ -1,0 +1,17 @@
+syntax = "proto3";
+option csharp_namespace = "PersonManagement.API";
+package personmanagement;
+import "google/protobuf/timestamp.proto";
+service PersonManagementService {
+  rpc CreatePerson (PersonData) returns (PersonReply);
+  rpc GetPerson (PersonId) returns (PersonReply);
+  rpc GetAllPersons (Empty) returns (PersonList);
+  rpc UpdatePerson (UpdatePersonRequest) returns (PersonReply);
+  rpc DeletePerson (PersonId) returns (Empty);
+}
+message Empty {}
+message PersonId { int32 id = 1; }
+message PersonData { string first_name = 1; string last_name = 2; string national_code = 3; google.protobuf.Timestamp birth_date = 4; }
+message PersonReply { int32 id = 1; string first_name = 2; string last_name = 3; string national_code = 4; google.protobuf.Timestamp birth_date = 5; }
+message PersonList { repeated PersonReply persons = 1; }
+message UpdatePersonRequest { int32 id = 1; string first_name = 2; string last_name = 3; string national_code = 4; google.protobuf.Timestamp birth_date = 5; }
