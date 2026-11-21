@@ -11,7 +11,7 @@ A layered CRUD service built with ASP.NET Core gRPC, Protocol Buffers, EF Core, 
 
 ## Requirements and configuration
 
-Install the .NET 10 SDK and SQL Server. Configure `ConnectionStrings:PersonDatabase` in `PersonManagement.API/appsettings.json` or override it with `ConnectionStrings__PersonDatabase`. The checked-in connection string is a local development example using Windows authentication; it contains no credentials.
+Install the .NET 10 SDK and SQL Server. Configure `ConnectionStrings:PersonDatabase` in `PersonManagement.API/appsettings.json` or override it with `ConnectionStrings__PersonDatabase`. Set a local SQL Server connection string in `PersonManagement.API/appsettings.json` or use user secrets/environment variables for credentials. Do not commit real credentials.
 
 ## Database
 
@@ -35,7 +35,30 @@ dotnet run --project PersonManagement.API
 
 The server listens on the configured gRPC HTTP/2 endpoint. Use a gRPC client such as `grpcurl` with TLS configured for the environment. For local development, reflection is not enabled; provide the `.proto` file explicitly.
 
-## Contract and sample calls
+## gRPC contract and example calls
+
+The service contract is in `PersonManagement.API/Protos/persons.proto`. Server reflection is not enabled, so pass this file to `grpcurl`. The examples below use the local HTTPS profile (`localhost:7443`) and `-insecure` to accept the development certificate. Remove `-insecure` when using a trusted certificate in another environment.
+
+Run these commands from the repository root while the API is running:
+
+```powershell
+# Create
+grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '{"firstName":"Sara","lastName":"Ahmadi","nationalCode":"1234567890","birthDate":"1990-05-20T00:00:00Z"}' localhost:7443 personmanagement.PersonManagementService/CreatePerson
+
+# Get by ID
+grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '{"id":1}' localhost:7443 personmanagement.PersonManagementService/GetPerson
+
+# Get all
+grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '{}' localhost:7443 personmanagement.PersonManagementService/GetAllPersons
+
+# Update by ID
+grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '{"id":1,"firstName":"Sara","lastName":"Ahmadi","nationalCode":"1234567890","birthDate":"1990-05-20T00:00:00Z"}' localhost:7443 personmanagement.PersonManagementService/UpdatePerson
+
+# Delete by ID
+grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '{"id":1}' localhost:7443 personmanagement.PersonManagementService/DeletePerson
+```
+
+The `birthDate` values use RFC3339 format and are converted to `google.protobuf.Timestamp` by the Proto JSON parser. Replace ID `1` with the ID returned by `CreatePerson`.
 
 ```protobuf
 service PersonManagementService {
@@ -45,18 +68,16 @@ service PersonManagementService {
   rpc UpdatePerson (UpdatePersonRequest) returns (PersonReply);
   rpc DeletePerson (PersonId) returns (Empty);
 }
-message PersonData { string first_name = 1; string last_name = 2; string national_code = 3; google.protobuf.Timestamp birth_date = 4; }
+message PersonData {
+  string first_name = 1;
+  string last_name = 2;
+  string national_code = 3;
+  google.protobuf.Timestamp birth_date = 4;
+}
 ```
-
-Example with `grpcurl` (adjust address/TLS and use an RFC3339 timestamp):
-
-```powershell
-grpcurl -plaintext -import-path PersonManagement.API/Protos -proto persons.proto -d '{"firstName":"Ava","lastName":"Stone","nationalCode":"1234567890","birthDate":"1990-01-01T00:00:00Z"}' localhost:5000 personmanagement.PersonManagementService/CreatePerson
-grpcurl -plaintext -import-path PersonManagement.API/Protos -proto persons.proto -d '{"id":1}' localhost:5000 personmanagement.PersonManagementService/GetPerson
-grpcurl -plaintext -import-path PersonManagement.API/Protos -proto persons.proto -d '{}' localhost:5000 personmanagement.PersonManagementService/GetAllPersons
-```
-
 ## Errors and logging
 
 Invalid input maps to `InvalidArgument`, missing people to `NotFound`, duplicate national codes to `AlreadyExists`, and unexpected errors to a generic `Internal` response. Cancellation is passed through. Serilog logs operation IDs and unexpected exceptions; national codes are never logged.
+
+
 

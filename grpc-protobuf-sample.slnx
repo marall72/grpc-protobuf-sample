@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
   <Project Path="PersonManagement.Domain\PersonManagement.Domain.csproj" />
   <Project Path="PersonManagement.Application\PersonManagement.Application.csproj" />
   <Project Path="PersonManagement.Infrastructure\PersonManagement.Infrastructure.csproj" />
