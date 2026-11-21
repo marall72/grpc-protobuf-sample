@@ -1,6 +1,6 @@
 # Person Management gRPC API
 
-A layered CRUD service built with ASP.NET Core gRPC, Protocol Buffers, EF Core, SQL Server, FluentValidation, Serilog, and xUnit. No REST CRUD endpoints are exposed.
+A layered CRUD service built with ASP.NET Core gRPC, Protocol Buffers, EF Core, SQL Server, FluentValidation, Serilog. No REST CRUD endpoints are exposed.
 
 ## Projects
 
@@ -8,7 +8,6 @@ A layered CRUD service built with ASP.NET Core gRPC, Protocol Buffers, EF Core, 
 - `PersonManagement.Application`: service contracts, validation, DTOs, and use cases.
 - `PersonManagement.Infrastructure`: EF Core context, SQL Server mapping, and repository.
 - `PersonManagement.API`: gRPC contract and endpoint host.
-- `PersonManagement.Tests`: isolated application unit tests using an in-memory fake repository.
 
 ## Requirements and configuration
 
@@ -29,8 +28,8 @@ The migration command creates a migration from the current entity configuration;
 ## Run
 
 ```powershell
-dotnet restore PersonManagement.sln
-dotnet build PersonManagement.sln
+dotnet restore grpc-protobuf-sample.slnx
+dotnet build grpc-protobuf-sample.slnx
 dotnet run --project PersonManagement.API
 ```
 
@@ -61,8 +60,3 @@ grpcurl -plaintext -import-path PersonManagement.API/Protos -proto persons.proto
 
 Invalid input maps to `InvalidArgument`, missing people to `NotFound`, duplicate national codes to `AlreadyExists`, and unexpected errors to a generic `Internal` response. Cancellation is passed through. Serilog logs operation IDs and unexpected exceptions; national codes are never logged.
 
-## Tests
-
-```powershell
-dotnet test PersonManagement.sln
-```

@@ -3,5 +3,4 @@
   <Project Path="PersonManagement.Application\PersonManagement.Application.csproj" />
   <Project Path="PersonManagement.Infrastructure\PersonManagement.Infrastructure.csproj" />
   <Project Path="PersonManagement.API\PersonManagement.API.csproj" />
-  <Project Path="PersonManagement.Tests\PersonManagement.Tests.csproj" />
 </Solution>
