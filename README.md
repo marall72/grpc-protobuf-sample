@@ -43,19 +43,19 @@ Run these commands from the repository root while the API is running:
 
 ```powershell
 # Create
-grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '{"firstName":"Sara","lastName":"Ahmadi","nationalCode":"1234567890","birthDate":"1990-05-20T00:00:00Z"}' localhost:7443 personmanagement.PersonManagementService/CreatePerson
+'{"firstName":"Sara","lastName":"Ahmadi","nationalCode":"1234567890","birthDate":"1990-05-20T00:00:00Z"}' | grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '@' localhost:7443 personmanagement.PersonManagementService/CreatePerson
 
 # Get by ID
-grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '{"id":1}' localhost:7443 personmanagement.PersonManagementService/GetPerson
+'{"id":1}' | grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '@' localhost:7443 personmanagement.PersonManagementService/GetPerson
 
 # Get all
-grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '{}' localhost:7443 personmanagement.PersonManagementService/GetAllPersons
+'{}' | grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '@' localhost:7443 personmanagement.PersonManagementService/GetAllPersons
 
 # Update by ID
-grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '{"id":1,"firstName":"Sara","lastName":"Ahmadi","nationalCode":"1234567890","birthDate":"1990-05-20T00:00:00Z"}' localhost:7443 personmanagement.PersonManagementService/UpdatePerson
+'{"id":1,"firstName":"Sara","lastName":"Ahmadi","nationalCode":"1234567890","birthDate":"1990-05-20T00:00:00Z"}' | grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '@' localhost:7443 personmanagement.PersonManagementService/UpdatePerson
 
 # Delete by ID
-grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '{"id":1}' localhost:7443 personmanagement.PersonManagementService/DeletePerson
+'{"id":1}' | grpcurl -insecure -import-path .\PersonManagement.API\Protos -proto persons.proto -d '@' localhost:7443 personmanagement.PersonManagementService/DeletePerson
 ```
 
 The `birthDate` values use RFC3339 format and are converted to `google.protobuf.Timestamp` by the Proto JSON parser. Replace ID `1` with the ID returned by `CreatePerson`.
@@ -78,6 +78,7 @@ message PersonData {
 ## Errors and logging
 
 Invalid input maps to `InvalidArgument`, missing people to `NotFound`, duplicate national codes to `AlreadyExists`, and unexpected errors to a generic `Internal` response. Cancellation is passed through. Serilog logs operation IDs and unexpected exceptions; national codes are never logged.
+
 
 
 
